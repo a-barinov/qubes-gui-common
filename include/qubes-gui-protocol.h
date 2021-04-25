@@ -22,6 +22,8 @@
 #ifndef _QUBES_GUI_PROTOCOL_H
 #define _QUBES_GUI_PROTOCOL_H
 
+#define XI2
+
 /* Messagess are described here:
  * https://www.qubes-os.org/doc/gui/
  */
@@ -35,7 +37,11 @@ typedef unsigned __int32 uint32_t;
 /* version of protocol described in this file, used as gui-daemon protocol
  * version; specific agent defines own version which them support */
 #define QUBES_GUID_PROTOCOL_VERSION_MAJOR 1
+#ifndef XI2
 #define QUBES_GUID_PROTOCOL_VERSION_MINOR 3
+#else
+#define QUBES_GUID_PROTOCOL_VERSION_MINOR 4
+#endif
 #define QUBES_GUID_PROTOCOL_VERSION (QUBES_GUID_PROTOCOL_VERSION_MAJOR << 16 | QUBES_GUID_PROTOCOL_VERSION_MINOR)
 
 //arbitrary
@@ -99,6 +105,9 @@ enum {
     MSG_WMCLASS,
     MSG_WINDOW_DUMP,
     MSG_CURSOR,
+#ifdef XI2
+    MSG_TOUCH,
+#endif
     MSG_MAX
 };
 /* VM -> Dom0, Dom0 -> VM */
@@ -144,6 +153,17 @@ struct msg_motion {
     uint32_t state;
     uint32_t is_hint;
 };
+#ifdef XI2
+/* Dom0 -> VM */
+struct msg_touch {
+    uint32_t x;
+    uint32_t y;
+    uint32_t button;
+    uint32_t pressure;
+    uint32_t touchid;
+    uint32_t eventtype;
+};
+#endif
 /* Dom0 -> VM */
 struct msg_crossing {
     uint32_t type;
